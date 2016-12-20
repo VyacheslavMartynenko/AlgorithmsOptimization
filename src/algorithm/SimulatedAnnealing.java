@@ -108,9 +108,9 @@ public class SimulatedAnnealing implements Algorithm {
             }
 
             if (rate < 0.945) {
-                t = (1 - alpha) / t;
+                t = t / (1 - alpha);
             } else {
-                t = (1 - alpha) * t;
+                t = t * (1 - alpha);
             }
         }
 
