@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <Button layoutX="102.0" layoutY="226.0" mnemonicParsing="false" onAction="#calculate" text="Start" />
+      <Label layoutX="14.0" layoutY="16.0" text="Number Of Attempts" />
+      <Label layoutX="124.0" layoutY="60.0" text="N(E)" />
+      <Label layoutX="78.0" layoutY="106.0" text="Bug Length" />
+      <TextField fx:id="attemptsText" layoutX="176.0" layoutY="9.0" text="100" />
+      <TextField fx:id="transpositionText" layoutX="176.0" layoutY="54.0" text="2" />
+      <TextField fx:id="bugText" layoutX="176.0" layoutY="102.0" text="10" />
+      <Label layoutX="112.0" layoutY="149.0" text="Alpha" />
+      <Label layoutX="28.0" layoutY="190.0" text="Initial Temperature" />
+      <TextField fx:id="alphaText" layoutX="176.0" layoutY="144.0" text="0.025" />
+      <TextField fx:id="temperatureText" layoutX="176.0" layoutY="185.0" text="1" />
+      <RadioButton fx:id="simulatedRadio" layoutX="48.0" layoutY="306.0" mnemonicParsing="false" text="Simulated Annealing" />
+      <RadioButton fx:id="hillRadio" layoutX="48.0" layoutY="274.0" mnemonicParsing="false" text="Hill Climbing" />
+      <Label layoutX="28.0" layoutY="345.0" text="Initial Temperature" />
+      <Label fx:id="answerLabel" layoutX="176.0" layoutY="345.0" text="Answer" />
+    </children>
+</AnchorPane>
