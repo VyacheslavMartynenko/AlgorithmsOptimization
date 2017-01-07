@@ -31,7 +31,8 @@ public class SimulatedAnnealing implements Algorithm {
         this.random = new Random();
     }
 
-    public Transposition getBestLength() {
+    @Override
+    public int getBestLength() {
         Transposition startTransposition = new Transposition(startList);
 
         boolean frozen;
@@ -68,14 +69,14 @@ public class SimulatedAnnealing implements Algorithm {
                 rejected = 0;
 
                 isFreezing++;
-                if (isFreezing == 3) frozen = true;
+                if (isFreezing == 10) frozen = true;
             }
 
         } while (!frozen);
 
         System.out.println(startTransposition.getElementsList());
 
-        return startTransposition;
+        return Function.getLength(startTransposition, bugLength);
     }
 
     private double calculateInitialT(int numberOfAttempts, Transposition transposition, double initialT) {

@@ -20,7 +20,8 @@ public class HillClimbing implements Algorithm {
         this.random = new Random();
     }
 
-    public Transposition getBestLength() {
+    @Override
+    public int getBestLength() {
         boolean found;
 //        select x from X at Random
         Transposition startTransposition = new Transposition(startList);
@@ -54,6 +55,6 @@ public class HillClimbing implements Algorithm {
         while (!found);
 //         return x
         System.out.println(startTransposition.getElementsList());
-        return startTransposition;
+        return Function.getLength(startTransposition, bugLength);
     }
 }

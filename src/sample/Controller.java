@@ -33,6 +33,7 @@ public class Controller {
     private FileChooser fileChooser;
     private Gson gson;
     private ArrayList<Integer> data;
+    private int optimalSolution;
 
     @FXML
     public void initialize() {
@@ -52,8 +53,8 @@ public class Controller {
                     Integer.valueOf(transpositionText.getText()),
                     data);
 
-            Transposition answer = hillClimbing.getBestLength();
-            answerLabel.setText(answer.getElementsList().toString());
+            int thisSolution = hillClimbing.getBestLength();
+            answerLabel.setText("this: " + thisSolution + " optimal: " + optimalSolution);
         } else {
             SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(
                     Integer.valueOf(attemptsText.getText()),
@@ -64,8 +65,8 @@ public class Controller {
                     Double.valueOf(temperatureText.getText())
             );
 
-            Transposition answer = simulatedAnnealing.getBestLength();
-            answerLabel.setText(answer.getElementsList().toString());
+            int thisSolution = simulatedAnnealing.getBestLength();
+            answerLabel.setText("this: " + thisSolution + " optimal: " + optimalSolution);
         }
     }
 
@@ -80,6 +81,7 @@ public class Controller {
 
                 DataSet dataSet = gson.fromJson(jsonData, DataSet.class);
                 bugText.setText(String.valueOf(dataSet.container));
+                optimalSolution = dataSet.solution;
                 data = dataSet.data;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,7 +1,7 @@
 package math;
 
 public class Function {
-    public static double getLength(Transposition transposition, int lengthBound) {
+    public static int getLength(Transposition transposition, int lengthBound) {
         int value = 0;
         int count = 0;
         for (int element : transposition.getElementsList()) {
