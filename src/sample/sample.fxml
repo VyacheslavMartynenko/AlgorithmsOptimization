@@ -23,7 +23,8 @@
       <TextField fx:id="temperatureText" layoutX="176.0" layoutY="185.0" text="1" />
       <RadioButton fx:id="simulatedRadio" layoutX="48.0" layoutY="306.0" mnemonicParsing="false" text="Simulated Annealing" />
       <RadioButton fx:id="hillRadio" layoutX="48.0" layoutY="274.0" mnemonicParsing="false" text="Hill Climbing" />
-      <Label layoutX="28.0" layoutY="345.0" text="Initial Temperature" />
+      <Label layoutX="100.0" layoutY="345.0" text="Answer" />
       <Label fx:id="answerLabel" layoutX="176.0" layoutY="345.0" text="Answer" />
+      <Button layoutX="28.0" layoutY="226.0" mnemonicParsing="false" onAction="#open" text="Open" />
     </children>
 </AnchorPane>

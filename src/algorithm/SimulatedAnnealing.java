@@ -13,15 +13,17 @@ public class SimulatedAnnealing implements Algorithm {
     private int numberOfAttempts;
     private int bugLength;
     private int transpositionCount;
+    private ArrayList<Integer> startList;
 
     private double alpha = 0.025;
     private double initTemperature = 1;
 
-    public SimulatedAnnealing(int numberOfAttempts, int bugLength, int transpositionCount,
+    public SimulatedAnnealing(int numberOfAttempts, int bugLength, int transpositionCount, ArrayList<Integer> startList,
                               double alpha, double initTemperature) {
         this.numberOfAttempts = numberOfAttempts;
         this.bugLength = bugLength;
         this.transpositionCount = transpositionCount;
+        this.startList = startList;
 
         this.alpha = alpha;
         this.initTemperature = initTemperature;
@@ -30,7 +32,6 @@ public class SimulatedAnnealing implements Algorithm {
     }
 
     public Transposition getBestLength() {
-        ArrayList<Integer> startList = new ArrayList<>(Arrays.asList(5, 1, 2, 3, 4, 6, 7, 8, 9, 5));
         Transposition startTransposition = new Transposition(startList);
 
         boolean frozen;

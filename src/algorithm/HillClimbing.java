@@ -3,27 +3,25 @@ package algorithm;
 import math.Function;
 import math.Transposition;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 public class HillClimbing implements Algorithm {
     private Random random;
     private int numberOfAttempts;
     private int bugLength;
     private int transpositionCount;
+    private ArrayList<Integer> startList;
 
-    public HillClimbing(int numberOfAttempts, int bugLength, int transpositionCount) {
+    public HillClimbing(int numberOfAttempts, int bugLength, int transpositionCount, ArrayList<Integer> startList) {
         this.numberOfAttempts = numberOfAttempts;
         this.bugLength = bugLength;
         this.transpositionCount = transpositionCount;
+        this.startList = startList;
         this.random = new Random();
     }
 
     public Transposition getBestLength() {
         boolean found;
-        ArrayList<Integer> startList = new ArrayList<>(Arrays.asList(5, 1, 2, 3, 4, 6, 7, 8, 9, 5));
 //        select x from X at Random
         Transposition startTransposition = new Transposition(startList);
 //            Repeat
