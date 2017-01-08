@@ -1,7 +1,7 @@
 package algorithm;
 
 import math.Function;
-import math.Transposition;
+import model.Transposition;
 
 import java.util.*;
 

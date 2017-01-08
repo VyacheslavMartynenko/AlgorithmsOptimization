@@ -1,5 +1,7 @@
 package math;
 
+import model.Transposition;
+
 public class Function {
     public static int getLength(Transposition transposition, int lengthBound) {
         int value = 0;
