@@ -68,7 +68,7 @@ public class SimulatedAnnealing implements Algorithm {
                 rejected = 0;
 
                 isFreezing++;
-                if (isFreezing == 10) frozen = true;
+                if (isFreezing == 500) frozen = true;
             }
 
         } while (!frozen);
