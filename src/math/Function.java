@@ -15,8 +15,8 @@ public class Function {
         }
         count++;
 
-        System.out.println(transposition.getElementsList());
-        System.out.println(count);
+        //System.out.println(transposition.getElementsList());
+        //System.out.println(count);
 
         return count;
     }

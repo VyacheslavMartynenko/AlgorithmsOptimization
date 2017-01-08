@@ -12,6 +12,7 @@ public class Genetic implements Algorithm {
     private ArrayList<Integer> startList;
     private ArrayList<Transposition> population;
     private HashMap<Transposition, Integer> populationWithFitness;
+    private boolean isReverse;
 
     public Genetic(int numberOfAttempts, int bugLength, ArrayList<Integer> startList) {
         this.numberOfAttempts = numberOfAttempts;
@@ -31,9 +32,8 @@ public class Genetic implements Algorithm {
         //repeat
         do {
             //parent selection - 2 transpositions
-            ArrayList<Transposition> parents = getParents();
-            Transposition firstParent = parents.get(0);
-            Transposition secondParent = parents.get(1);
+            Transposition firstParent = getParent();
+            Transposition secondParent = getParent();
             //children - 2 transpositions by crossover
             Transposition crossoverChild = getCrossoverChild(firstParent, secondParent);
             //children - 2 transpositions by mutate previous
@@ -81,7 +81,7 @@ public class Genetic implements Algorithm {
         Transposition mutateChild = new Transposition(crossoverChild.getElementsList());
 
         for (int gen = 0; gen < mutateChild.getElementsList().size(); gen++) {
-            if (Math.random() > 0.97) {
+            if (Math.random() > 0.95) {
                 Collections.swap(mutateChild.getElementsList(),
                         random.nextInt(mutateChild.getElementsList().size()),
                         random.nextInt(mutateChild.getElementsList().size()));
@@ -98,8 +98,14 @@ public class Genetic implements Algorithm {
         ArrayList<Integer> secondParentGens = secondParent.getElementsList();
         ArrayList<Integer> childGens = new ArrayList<>();
 
-        for (int genPosition = 0; genPosition < firstParentGens.size() / 2; genPosition++) {
-            childGens.add(firstParentGens.get(genPosition));
+        if (isReverse) {
+            for (int genPosition = 0; genPosition < firstParentGens.size() / 2; genPosition++) {
+                childGens.add(firstParentGens.get(genPosition));
+            }
+        } else {
+            for (int genPosition = firstParentGens.size() / 2; genPosition < firstParentGens.size(); genPosition++) {
+                childGens.add(firstParentGens.get(genPosition));
+            }
         }
 
         for (int gen : secondParentGens) {
@@ -111,16 +117,19 @@ public class Genetic implements Algorithm {
             if (childGens.size() == gensSize) break;
         }
 
+        isReverse = !isReverse;
+
         children = new Transposition(childGens);
         return children;
     }
 
-    private ArrayList<Transposition> getParents() {
-        ArrayList<Transposition> parents = new ArrayList<>();
-        for (int parent = 0; parent < 2; parent++) {
-            parents.add(population.get(random.nextInt(population.size())));
+    private Transposition getParent() {
+        ArrayList<Transposition> randomParents = new ArrayList<>();
+        for (int parent = 0; parent < 8; parent++) {
+            randomParents.add(population.get(random.nextInt(population.size())));
         }
-        return parents;
+        Collections.sort(randomParents, new TranspositionComparator());
+        return randomParents.get(0);
     }
 
     private HashMap<Transposition, Integer> calculateFitness(ArrayList<Transposition> population) {
@@ -146,5 +155,11 @@ public class Genetic implements Algorithm {
         }
 
         return population;
+    }
+
+    private class TranspositionComparator implements Comparator<Transposition> {
+        public int compare(Transposition t1, Transposition t2) {
+            return Integer.valueOf(Function.getLength(t1, bugLength)).compareTo(Function.getLength(t2, bugLength));
+        }
     }
 }
