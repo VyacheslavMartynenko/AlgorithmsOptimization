@@ -4,8 +4,6 @@ import math.Function;
 import model.Transposition;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Genetic implements Algorithm {
     private Random random;
@@ -38,7 +36,6 @@ public class Genetic implements Algorithm {
             Transposition secondParent = parents.get(1);
             //children - 2 transpositions by crossover
             Transposition crossoverChild = getCrossoverChild(firstParent, secondParent);
-
             //children - 2 transpositions by mutate previous
             Transposition mutateChildren = getMutateChild(crossoverChild);
             //calculate children fitness
@@ -54,25 +51,26 @@ public class Genetic implements Algorithm {
     }
 
     private int findBest(HashMap<Transposition, Integer> populationWithFitness) {
-        Stream<Map.Entry<Transposition, Integer>> sorted = populationWithFitness.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
-        Map<Transposition, Integer> sortedPopulation = sorted.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return sortedPopulation.entrySet().iterator().next().getValue();
+        return Collections.min(populationWithFitness.values());
     }
 
     private void replaceInPopulation(HashMap<Transposition, Integer> childrenWithFitness, HashMap<Transposition, Integer> populationWithFitness) {
-        Stream<Map.Entry<Transposition, Integer>> sorted = populationWithFitness.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue());
-        Map<Transposition, Integer> sortedPopulation = sorted.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        Iterator<Map.Entry<Transposition, Integer>> parentIterator = sortedPopulation.entrySet().iterator();
         Iterator<Map.Entry<Transposition, Integer>> childIterator = childrenWithFitness.entrySet().iterator();
-
+        Iterator<Map.Entry<Transposition, Integer>> parentIterator = populationWithFitness.entrySet().iterator();
         Map.Entry<Transposition, Integer> child = childIterator.next();
-        Map.Entry<Transposition, Integer> parent = parentIterator.next();
 
-        if (child.getValue() < parent.getValue()) {
-            populationWithFitness.remove(parent.getKey());
+        Transposition key = null;
+        int value = Collections.max(populationWithFitness.values());
+
+        while (parentIterator.hasNext()) {
+            Map.Entry<Transposition, Integer> element = parentIterator.next();
+            if (element.getValue() == value) {
+                key = element.getKey();
+            }
+        }
+
+        if (child.getValue() < value) {
+            populationWithFitness.remove(key);
             populationWithFitness.put(child.getKey(), child.getValue());
         }
 
