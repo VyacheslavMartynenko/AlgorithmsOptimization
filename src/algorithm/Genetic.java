@@ -62,7 +62,7 @@ public class Genetic implements Algorithm {
 
     private void replaceInPopulation(HashMap<Transposition, Integer> childrenWithFitness, HashMap<Transposition, Integer> populationWithFitness) {
         Stream<Map.Entry<Transposition, Integer>> sorted = populationWithFitness.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
+                .sorted(Map.Entry.comparingByValue());
         Map<Transposition, Integer> sortedPopulation = sorted.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Iterator<Map.Entry<Transposition, Integer>> parentIterator = sortedPopulation.entrySet().iterator();
@@ -71,7 +71,7 @@ public class Genetic implements Algorithm {
         Map.Entry<Transposition, Integer> child = childIterator.next();
         Map.Entry<Transposition, Integer> parent = parentIterator.next();
 
-        if (child.getValue() > parent.getValue()) {
+        if (child.getValue() < parent.getValue()) {
             populationWithFitness.remove(parent.getKey());
             populationWithFitness.put(child.getKey(), child.getValue());
         }
@@ -95,15 +95,25 @@ public class Genetic implements Algorithm {
 
     private Transposition getCrossoverChild(Transposition firstParent, Transposition secondParent) {
         Transposition children;
+        int gensSize = firstParent.getElementsList().size();
         ArrayList<Integer> firstParentGens = firstParent.getElementsList();
         ArrayList<Integer> secondParentGens = secondParent.getElementsList();
+        ArrayList<Integer> childGens = new ArrayList<>();
 
-        for (int gen = 0; gen < firstParentGens.size() / 2; gen++) {
-            int secondGen = secondParentGens.get(secondParentGens.get(secondParentGens.size() / 2 + gen));
-            firstParentGens.set(gen, secondGen);
+        for (int genPosition = 0; genPosition < firstParentGens.size() / 2; genPosition++) {
+            childGens.add(firstParentGens.get(genPosition));
         }
 
-        children = new Transposition(firstParentGens);
+        for (int gen : secondParentGens) {
+            if (!childGens.contains(gen) ||
+                    Collections.frequency(childGens, gen) < Collections.frequency(secondParentGens, gen)) {
+                childGens.add(gen);
+            }
+
+            if (childGens.size() == gensSize) break;
+        }
+
+        children = new Transposition(childGens);
         return children;
     }
 
