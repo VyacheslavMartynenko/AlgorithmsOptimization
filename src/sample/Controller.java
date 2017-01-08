@@ -1,5 +1,6 @@
 package sample;
 
+import algorithm.Genetic;
 import algorithm.HillClimbing;
 import algorithm.SimulatedAnnealing;
 import com.google.gson.Gson;
@@ -27,6 +28,7 @@ public class Controller {
 
     public RadioButton simulatedRadio;
     public RadioButton hillRadio;
+    public RadioButton geneticRadio;
     public Label answerLabel;
 
     private FileChooser fileChooser;
@@ -39,6 +41,7 @@ public class Controller {
         final ToggleGroup group = new ToggleGroup();
         simulatedRadio.setToggleGroup(group);
         hillRadio.setToggleGroup(group);
+        geneticRadio.setToggleGroup(group);
 
         fileChooser = new FileChooser();
         gson = new Gson();
@@ -54,7 +57,7 @@ public class Controller {
 
             int thisSolution = hillClimbing.getBestLength();
             answerLabel.setText("this: " + thisSolution + " optimal: " + optimalSolution);
-        } else {
+        } else if (simulatedRadio.isSelected()) {
             SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(
                     Integer.valueOf(attemptsText.getText()),
                     Integer.valueOf(bugText.getText()),
@@ -65,6 +68,15 @@ public class Controller {
             );
 
             int thisSolution = simulatedAnnealing.getBestLength();
+            answerLabel.setText("this: " + thisSolution + " optimal: " + optimalSolution);
+        } else {
+            Genetic genetic = new Genetic(
+                    Integer.valueOf(attemptsText.getText()),
+                    Integer.valueOf(bugText.getText()),
+                    data
+            );
+
+            int thisSolution = genetic.getBestLength();
             answerLabel.setText("this: " + thisSolution + " optimal: " + optimalSolution);
         }
     }
