@@ -144,9 +144,9 @@ public class Genetic implements Algorithm {
     private ArrayList<Transposition> generatePopulation(Transposition startTransposition) {
         ArrayList<Transposition> population = new ArrayList<>();
 
-        for (int populationSize = 0; populationSize < 10; populationSize++) {
+        for (int populationSize = 0; populationSize < 1000; populationSize++) {
             Transposition modifiedTransposition = new Transposition(new ArrayList<>(startTransposition.getElementsList()));
-            for (int swapCount = 0; swapCount < 2; swapCount++) {
+            for (int swapCount = 0; swapCount < 1000; swapCount++) {
                 Collections.swap(modifiedTransposition.getElementsList(),
                         random.nextInt(modifiedTransposition.getElementsList().size()),
                         random.nextInt(modifiedTransposition.getElementsList().size()));
