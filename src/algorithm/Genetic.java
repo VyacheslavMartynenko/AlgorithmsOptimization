@@ -79,15 +79,11 @@ public class Genetic implements Algorithm {
 
     private Transposition getMutateChild(Transposition crossoverChild) {
         Transposition mutateChild = new Transposition(crossoverChild.getElementsList());
-
-        for (int gen = 0; gen < mutateChild.getElementsList().size(); gen++) {
-            if (Math.random() > 0.95) {
-                Collections.swap(mutateChild.getElementsList(),
-                        random.nextInt(mutateChild.getElementsList().size()),
-                        random.nextInt(mutateChild.getElementsList().size()));
-            }
+        if (Math.random() > 0.95) {
+            Collections.swap(mutateChild.getElementsList(),
+                    random.nextInt(mutateChild.getElementsList().size()),
+                    random.nextInt(mutateChild.getElementsList().size()));
         }
-
         return mutateChild;
     }
 

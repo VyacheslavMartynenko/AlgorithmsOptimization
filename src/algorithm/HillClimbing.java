@@ -23,17 +23,12 @@ public class HillClimbing implements Algorithm {
     @Override
     public int getBestLength() {
         boolean found;
-//        select x from X at Random
         Transposition startTransposition = new Transposition(startList);
-//            Repeat
-        int tmp = 0;
+        //int tmp = 0;
         do {
-//                found <- false
             found = false;
-//                for i=1 to Number of Attempts
             for (int i = 0; i < numberOfAttempts; i++) {
-                System.out.println("tmp:" + ++tmp);
-//                select y From Ne(x) at Random
+                //System.out.println("tmp:" + ++tmp);
                 Transposition modifiedTransposition = new Transposition(new ArrayList<>(startTransposition.getElementsList()));
 
                 for (int swapCount = 0; swapCount < transpositionCount; swapCount++) {
@@ -42,18 +37,13 @@ public class HillClimbing implements Algorithm {
                             random.nextInt(modifiedTransposition.getElementsList().size()));
                 }
 
-//                if F(y) < F(x)
-                if (Function.getLength(modifiedTransposition, bugLength) < Function.getLength(startTransposition, bugLength)) {
-//                    x <- y
+                if (Function.compareTranspositions(modifiedTransposition, startTransposition, bugLength)) {
                     startTransposition = new Transposition(modifiedTransposition.getElementsList());
-//                    found <- true
                     found = true;
                 }
             }
-//            Until not found
         }
-        while (!found);
-//         return x
+        while (found);
         System.out.println(startTransposition.getElementsList());
         return Function.getLength(startTransposition, bugLength);
     }
