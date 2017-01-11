@@ -97,7 +97,7 @@ public class SimulatedAnnealing implements Algorithm {
                         random.nextInt(modifiedTransposition.getElementsList().size()));
             }
 
-            double dF = function.getLength(modifiedTransposition, bugLength) - function.getLength(startTransposition, bugLength);
+            double dF = function.getLengthWithRemains(modifiedTransposition, bugLength) - function.getLengthWithRemains(startTransposition, bugLength);
             if (random.nextDouble() < Math.pow(Math.E, - dF / t)) {
                 startTransposition = new Transposition(modifiedTransposition.getElementsList());
                 accepted++;
