@@ -35,6 +35,7 @@ public class Controller {
     private Gson gson;
     private ArrayList<Integer> data;
     private int optimalSolution;
+    private int elementsLength;
 
     @FXML
     public void initialize() {
@@ -64,7 +65,8 @@ public class Controller {
                     Integer.valueOf(transpositionText.getText()),
                     data,
                     Double.valueOf(alphaText.getText()),
-                    Double.valueOf(temperatureText.getText())
+                    Double.valueOf(temperatureText.getText()),
+                    elementsLength
             );
 
             int thisSolution = simulatedAnnealing.getBestLength();
@@ -94,6 +96,7 @@ public class Controller {
                 bugText.setText(String.valueOf(dataSet.container));
                 optimalSolution = dataSet.solution;
                 data = dataSet.data;
+                elementsLength = dataSet.elements;
             } catch (IOException e) {
                 e.printStackTrace();
             }

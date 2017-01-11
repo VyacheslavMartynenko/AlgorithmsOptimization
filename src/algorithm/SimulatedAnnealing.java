@@ -12,6 +12,7 @@ public class SimulatedAnnealing implements Algorithm {
     private int numberOfAttempts;
     private int bugLength;
     private int transpositionCount;
+    private int elementsLength;
     private ArrayList<Integer> startList;
     private Function function;
 
@@ -19,11 +20,12 @@ public class SimulatedAnnealing implements Algorithm {
     private double initTemperature = 1;
 
     public SimulatedAnnealing(int numberOfAttempts, int bugLength, int transpositionCount, ArrayList<Integer> startList,
-                              double alpha, double initTemperature) {
+                              double alpha, double initTemperature, int elementsLength) {
         this.numberOfAttempts = numberOfAttempts;
         this.bugLength = bugLength;
         this.transpositionCount = transpositionCount;
         this.startList = startList;
+        this.elementsLength = elementsLength;
 
         this.alpha = alpha;
         this.initTemperature = initTemperature;
@@ -39,6 +41,7 @@ public class SimulatedAnnealing implements Algorithm {
         boolean frozen;
         int accepted = 0, rejected = 0, isFreezing = 0;
         double t = calculateInitialT(numberOfAttempts, startTransposition, initTemperature);
+        int frozenLength = elementsLength/4 + 100;
 
         do {
             frozen = false;
@@ -50,7 +53,7 @@ public class SimulatedAnnealing implements Algorithm {
                         random.nextInt(modifiedTransposition.getElementsList().size()));
             }
 
-            double dF = function.getLength(modifiedTransposition, bugLength) - function.getLength(startTransposition, bugLength);
+            double dF = function.getLengthWithRemains(modifiedTransposition, bugLength) - function.getLengthWithRemains(startTransposition, bugLength);
             if (random.nextDouble() < Math.pow(Math.E, - dF / t)) {
                 startTransposition = new Transposition(modifiedTransposition.getElementsList());
                 accepted++;
@@ -70,7 +73,7 @@ public class SimulatedAnnealing implements Algorithm {
                 rejected = 0;
 
                 isFreezing++;
-                if (isFreezing == 50) frozen = true;
+                if (isFreezing == frozenLength) frozen = true;
             }
 
         } while (!frozen);

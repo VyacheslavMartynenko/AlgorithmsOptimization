@@ -22,6 +22,26 @@ public class Function {
         return count;
     }
 
+    public double getLengthWithRemains(Transposition transposition, int lengthBound) {
+        double remains = 0;
+        int value = 0;
+        int count = 0;
+        for (int element : transposition.getElementsList()) {
+            if (value + element > lengthBound) {
+                remains += Math.pow(lengthBound - value, 2);
+                value = 0;
+                count++;
+            }
+            value += element;
+        }
+
+        count++;
+        remains += Math.pow(lengthBound - value, 2);
+        remains = Math.sqrt(remains);
+
+        return count + 1 / (0.05 * remains);
+    }
+
     private Objective getLengthAndRemains(Transposition transposition, int lengthBound) {
         ArrayList<Integer> remains = new ArrayList<>();
         int value = 0;
