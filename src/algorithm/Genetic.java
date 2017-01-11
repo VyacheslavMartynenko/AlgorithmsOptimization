@@ -12,13 +12,15 @@ public class Genetic implements Algorithm {
     private ArrayList<Integer> startList;
     private ArrayList<Transposition> population;
     private HashMap<Transposition, Integer> populationWithFitness;
+    private Function function;
     private boolean isReverse;
 
     public Genetic(int numberOfAttempts, int bugLength, ArrayList<Integer> startList) {
         this.numberOfAttempts = numberOfAttempts;
         this.bugLength = bugLength;
         this.startList = startList;
-        random = new Random();
+        this.random = new Random();
+        this.function = new Function();
     }
 
     @Override
@@ -131,7 +133,7 @@ public class Genetic implements Algorithm {
     private HashMap<Transposition, Integer> calculateFitness(ArrayList<Transposition> population) {
         HashMap<Transposition, Integer> populationWithFitness = new HashMap<>();
         for (Transposition parent : population) {
-            int fitness = Function.getLength(parent, bugLength);
+            int fitness = function.getLength(parent, bugLength);
             populationWithFitness.put(parent, fitness);
         }
         return populationWithFitness;
@@ -155,7 +157,7 @@ public class Genetic implements Algorithm {
 
     private class TranspositionComparator implements Comparator<Transposition> {
         public int compare(Transposition t1, Transposition t2) {
-            return Integer.valueOf(Function.getLength(t1, bugLength)).compareTo(Function.getLength(t2, bugLength));
+            return Integer.valueOf(function.getLength(t1, bugLength)).compareTo(function.getLength(t2, bugLength));
         }
     }
 }

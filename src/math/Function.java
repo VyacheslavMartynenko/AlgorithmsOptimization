@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Function {
-    public static int getLength(Transposition transposition, int lengthBound) {
+    public int getLength(Transposition transposition, int lengthBound) {
         int value = 0;
         int count = 0;
         for (int element : transposition.getElementsList()) {
@@ -22,7 +22,7 @@ public class Function {
         return count;
     }
 
-    private static Objective getLengthAndRemains(Transposition transposition, int lengthBound) {
+    private Objective getLengthAndRemains(Transposition transposition, int lengthBound) {
         ArrayList<Integer> remains = new ArrayList<>();
         int value = 0;
         int count = 0;
@@ -43,7 +43,7 @@ public class Function {
         return new Objective(count, remains);
     }
 
-    public static boolean compareTranspositions(Transposition firstTransposition, Transposition secondTransposition, int bugLength) {
+    public boolean compareTranspositions(Transposition firstTransposition, Transposition secondTransposition, int bugLength) {
         Objective firstObjective = getLengthAndRemains(firstTransposition, bugLength);
         Objective secondObjective = getLengthAndRemains(secondTransposition, bugLength);
         ArrayList<Integer> firstRemains = firstObjective.getRemains();

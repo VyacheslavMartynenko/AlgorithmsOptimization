@@ -7,6 +7,7 @@ import java.util.*;
 
 public class HillClimbing implements Algorithm {
     private Random random;
+    private Function function;
     private int numberOfAttempts;
     private int bugLength;
     private int transpositionCount;
@@ -18,6 +19,7 @@ public class HillClimbing implements Algorithm {
         this.transpositionCount = transpositionCount;
         this.startList = startList;
         this.random = new Random();
+        this.function = new Function();
     }
 
     @Override
@@ -37,7 +39,7 @@ public class HillClimbing implements Algorithm {
                             random.nextInt(modifiedTransposition.getElementsList().size()));
                 }
 
-                if (Function.compareTranspositions(modifiedTransposition, startTransposition, bugLength)) {
+                if (function.compareTranspositions(modifiedTransposition, startTransposition, bugLength)) {
                     startTransposition = new Transposition(modifiedTransposition.getElementsList());
                     found = true;
                 }
@@ -45,6 +47,6 @@ public class HillClimbing implements Algorithm {
         }
         while (found);
         System.out.println(startTransposition.getElementsList());
-        return Function.getLength(startTransposition, bugLength);
+        return function.getLength(startTransposition, bugLength);
     }
 }

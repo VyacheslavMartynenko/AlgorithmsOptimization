@@ -13,6 +13,7 @@ public class SimulatedAnnealing implements Algorithm {
     private int bugLength;
     private int transpositionCount;
     private ArrayList<Integer> startList;
+    private Function function;
 
     private double alpha = 0.025;
     private double initTemperature = 1;
@@ -28,6 +29,7 @@ public class SimulatedAnnealing implements Algorithm {
         this.initTemperature = initTemperature;
 
         this.random = new Random();
+        this.function = new Function();
     }
 
     @Override
@@ -48,7 +50,7 @@ public class SimulatedAnnealing implements Algorithm {
                         random.nextInt(modifiedTransposition.getElementsList().size()));
             }
 
-            double dF = Function.getLength(modifiedTransposition, bugLength) - Function.getLength(startTransposition, bugLength);
+            double dF = function.getLength(modifiedTransposition, bugLength) - function.getLength(startTransposition, bugLength);
             if (random.nextDouble() < Math.pow(Math.E, - dF / t)) {
                 startTransposition = new Transposition(modifiedTransposition.getElementsList());
                 accepted++;
@@ -68,14 +70,14 @@ public class SimulatedAnnealing implements Algorithm {
                 rejected = 0;
 
                 isFreezing++;
-                if (isFreezing == 500) frozen = true;
+                if (isFreezing == 50) frozen = true;
             }
 
         } while (!frozen);
 
         System.out.println(startTransposition.getElementsList());
 
-        return Function.getLength(startTransposition, bugLength);
+        return function.getLength(startTransposition, bugLength);
     }
 
     private double calculateInitialT(int numberOfAttempts, Transposition transposition, double initialT) {
@@ -92,7 +94,7 @@ public class SimulatedAnnealing implements Algorithm {
                         random.nextInt(modifiedTransposition.getElementsList().size()));
             }
 
-            double dF = Function.getLength(modifiedTransposition, bugLength) - Function.getLength(startTransposition, bugLength);
+            double dF = function.getLength(modifiedTransposition, bugLength) - function.getLength(startTransposition, bugLength);
             if (random.nextDouble() < Math.pow(Math.E, - dF / t)) {
                 startTransposition = new Transposition(modifiedTransposition.getElementsList());
                 accepted++;
