@@ -39,7 +39,7 @@ public class Function {
         remains += Math.pow(lengthBound - value, 2);
         remains = Math.sqrt(remains);
 
-        return count + 1 / (0.05 * remains);
+        return count + 1 / remains;
     }
 
     private Objective getLengthAndRemains(Transposition transposition, int lengthBound) {

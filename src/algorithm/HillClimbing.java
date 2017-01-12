@@ -39,7 +39,8 @@ public class HillClimbing implements Algorithm {
                             random.nextInt(modifiedTransposition.getElementsList().size()));
                 }
 
-                if (function.compareTranspositions(modifiedTransposition, startTransposition, bugLength)) {
+                if (function.getLengthWithRemains(modifiedTransposition, bugLength) <
+                        function.getLengthWithRemains(startTransposition, bugLength)) {
                     startTransposition = new Transposition(modifiedTransposition.getElementsList());
                     found = true;
                 }
