@@ -96,7 +96,7 @@ public class Genetic implements Algorithm {
         ArrayList<Integer> childGens = new ArrayList<>();
 
         int start = random.nextInt(gensSize);
-        int finish = random.nextInt(gensSize);
+        int finish = start + random.nextInt(gensSize - start);
 
         for (int position = start; position < finish; position++) {
             childGens.add(firstParentGens.get(position));
@@ -108,7 +108,7 @@ public class Genetic implements Algorithm {
                 childGens.add(gen);
             }
         }
-        for (int position = 0; position < start; position++) {
+        for (int position = 0; position < finish; position++) {
             int gen = secondParentGens.get(position);
             if (!childGens.contains(gen) ||
                     Collections.frequency(childGens, gen) < Collections.frequency(secondParentGens, gen)) {
