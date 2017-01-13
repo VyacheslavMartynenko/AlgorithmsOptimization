@@ -96,26 +96,26 @@ public class Genetic implements Algorithm {
         ArrayList<Integer> secondParentGens = secondParent.getElementsList();
         ArrayList<Integer> childGens = new ArrayList<>();
 
-        if (isReverse) {
-            for (int genPosition = 0; genPosition < firstParentGens.size() / 2; genPosition++) {
-                childGens.add(firstParentGens.get(genPosition));
-            }
-        } else {
-            for (int genPosition = firstParentGens.size() / 2; genPosition < firstParentGens.size(); genPosition++) {
-                childGens.add(firstParentGens.get(genPosition));
-            }
-        }
+        int start = random.nextInt(gensSize);
+        int finish = random.nextInt(gensSize);
 
-        for (int gen : secondParentGens) {
+        for (int position = start; position < finish; position++) {
+            childGens.add(firstParentGens.get(position));
+        }
+        for (int position = finish; position < gensSize; position++) {
+            int gen = secondParentGens.get(position);
             if (!childGens.contains(gen) ||
                     Collections.frequency(childGens, gen) < Collections.frequency(secondParentGens, gen)) {
                 childGens.add(gen);
             }
-
-            if (childGens.size() == gensSize) break;
         }
-
-        isReverse = !isReverse;
+        for (int position = 0; position < start; position++) {
+            int gen = secondParentGens.get(position);
+            if (!childGens.contains(gen) ||
+                    Collections.frequency(childGens, gen) < Collections.frequency(secondParentGens, gen)) {
+                childGens.add(gen);
+            }
+        }
 
         children = new Transposition(childGens);
         return children;
