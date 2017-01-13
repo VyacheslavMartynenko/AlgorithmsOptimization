@@ -13,7 +13,6 @@ public class Genetic implements Algorithm {
     private ArrayList<Transposition> population;
     private HashMap<Transposition, Integer> populationWithFitness;
     private Function function;
-    private boolean isReverse;
 
     public Genetic(int numberOfAttempts, int bugLength, ArrayList<Integer> startList) {
         this.numberOfAttempts = numberOfAttempts;
