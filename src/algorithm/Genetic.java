@@ -3,16 +3,22 @@ package algorithm;
 import math.Function;
 import model.Transposition;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Genetic implements Algorithm {
+    public static final int POPULATION_SIZE = 100;
+    public static final int COUNT_OF_TOURNIR_CANDIDATE = 3;
     private Random random;
     private int bugLength;
     private int numberOfAttempts;
+    private ArrayList<Integer> rankMap;
     private ArrayList<Integer> startList;
     private ArrayList<Transposition> population;
-    private HashMap<Transposition, Integer> populationWithFitness;
+    private List<FitnessDecision> populationWithFitness;
     private Function function;
+
+    private Comparator<FitnessDecision> fitnessDecisionComparator;
 
     public Genetic(int numberOfAttempts, int bugLength, ArrayList<Integer> startList) {
         this.numberOfAttempts = numberOfAttempts;
@@ -20,67 +26,79 @@ public class Genetic implements Algorithm {
         this.startList = startList;
         this.random = new Random();
         this.function = new Function();
+
+        fitnessDecisionComparator = Comparator.comparing(x -> x.fitness);
+        fitnessDecisionComparator = fitnessDecisionComparator.reversed();
+
+        this.rankMap = new ArrayList<>(POPULATION_SIZE);
     }
 
     @Override
     public int getBestLength() {
+
+        int sumOfRank = calcSumOfRank(POPULATION_SIZE);
+
         Transposition startTransposition = new Transposition(startList);
         int count = 0;
-        //generate population - 10 transposition
+        //generate population - N transposition
         population = generatePopulation(startTransposition);
         //calculate fitness
         populationWithFitness = calculateFitness(population);
-        //repeat
+
+        System.out.println("start:" + findBest(populationWithFitness)
+                + "-" + "\t" + findWorst(populationWithFitness));
         do {
             //parent selection - 2 transpositions
-            Transposition firstParent = getParent();
-            Transposition secondParent = getParent();
-            //children - 2 transpositions by crossover
+            List<Transposition> list = getRankedRandomDecision(populationWithFitness, sumOfRank);
+            Transposition firstParent = list.get(0);
+            Transposition secondParent = list.get(1);
+
             Transposition crossoverChild = getCrossoverChild(firstParent, secondParent);
-            //children - 2 transpositions by mutate previous
+            Transposition secondCrossoverChild = getCrossoverChild(secondParent, firstParent);
+
             Transposition mutateChildren = getMutateChild(crossoverChild);
-            //calculate children fitness
+            Transposition secondMutateChildren = getMutateChild(secondCrossoverChild);
+
             ArrayList<Transposition> childPopulation = new ArrayList<>();
             childPopulation.add(mutateChildren);
-            HashMap<Transposition, Integer> childrenWithFitness = calculateFitness(childPopulation);
-            //replace children in population
+            childPopulation.add(secondMutateChildren);
+            List<FitnessDecision> childrenWithFitness = calculateFitness(childPopulation);
+
             replaceInPopulation(childrenWithFitness, populationWithFitness);
-            //until convergence
+
             count++;
         } while (count < numberOfAttempts);
+
+
+        System.out.println("end:" + findBest(populationWithFitness)
+                + "-" + "\t" + findWorst(populationWithFitness));
+
         return findBest(populationWithFitness);
     }
 
-    private int findBest(HashMap<Transposition, Integer> populationWithFitness) {
-        return Collections.min(populationWithFitness.values());
+    private int findBest(List<FitnessDecision> populationWithFitness) {
+        populationWithFitness.sort(fitnessDecisionComparator);
+        Transposition key = populationWithFitness.get(POPULATION_SIZE - 1).decision;
+        return function.getLength(key, bugLength);
     }
 
-    private void replaceInPopulation(HashMap<Transposition, Integer> childrenWithFitness, HashMap<Transposition, Integer> populationWithFitness) {
-        Iterator<Map.Entry<Transposition, Integer>> childIterator = childrenWithFitness.entrySet().iterator();
-        Iterator<Map.Entry<Transposition, Integer>> parentIterator = populationWithFitness.entrySet().iterator();
-        Map.Entry<Transposition, Integer> child = childIterator.next();
+    private int findWorst(List<FitnessDecision> populationWithFitness) {
+        populationWithFitness.sort(fitnessDecisionComparator);
+        Transposition key = populationWithFitness.get(0).decision;
+        return function.getLength(key, bugLength);
+    }
 
-        Transposition key = null;
-        int value = Collections.max(populationWithFitness.values());
-
-        while (parentIterator.hasNext()) {
-            Map.Entry<Transposition, Integer> element = parentIterator.next();
-            if (element.getValue() == value) {
-                key = element.getKey();
-            }
+    private void replaceInPopulation(List<FitnessDecision> childrenWithFitness, List<FitnessDecision> populationWithFitness) {
+        for (FitnessDecision childrenWithFitnes : childrenWithFitness) {
+            populationWithFitness.sort(fitnessDecisionComparator);
+            populationWithFitness.set(0, childrenWithFitnes);
         }
-
-        if (child.getValue() < value) {
-            populationWithFitness.remove(key);
-            populationWithFitness.put(child.getKey(), child.getValue());
-        }
-
         this.populationWithFitness = populationWithFitness;
     }
 
     private Transposition getMutateChild(Transposition crossoverChild) {
         Transposition mutateChild = new Transposition(crossoverChild.getElementsList());
-        if (Math.random() > 0.95) {
+        if (Math.random() > 0.80) {
             Collections.swap(mutateChild.getElementsList(),
                     random.nextInt(mutateChild.getElementsList().size()),
                     random.nextInt(mutateChild.getElementsList().size()));
@@ -88,35 +106,50 @@ public class Genetic implements Algorithm {
         return mutateChild;
     }
 
-    private Transposition getCrossoverChild(Transposition firstParent, Transposition secondParent) {
+    public static Transposition getCrossoverChild(Transposition firstParent, Transposition secondParent) {
+        final Random random = new Random();
         Transposition children;
         int gensSize = firstParent.getElementsList().size();
         ArrayList<Integer> firstParentGens = firstParent.getElementsList();
         ArrayList<Integer> secondParentGens = secondParent.getElementsList();
-        ArrayList<Integer> childGens = new ArrayList<>();
+        Integer childGens[] = new Integer[gensSize];
 
-        int start = random.nextInt(gensSize);
-        int finish = start + random.nextInt(gensSize - start);
+        int start = random.nextInt(gensSize / 2);
+        int finish = gensSize / 2 + random.nextInt(gensSize - gensSize / 2);
 
         for (int position = start; position < finish; position++) {
-            childGens.add(firstParentGens.get(position));
+            childGens[position] = firstParentGens.get(position);
         }
+
+        int index = finish;
         for (int position = finish; position < gensSize; position++) {
             int gen = secondParentGens.get(position);
-            if (!childGens.contains(gen) ||
-                    Collections.frequency(childGens, gen) < Collections.frequency(secondParentGens, gen)) {
-                childGens.add(gen);
+            if (index == gensSize) {
+                index = 0;
             }
-        }
-        for (int position = 0; position < finish; position++) {
-            int gen = secondParentGens.get(position);
-            if (!childGens.contains(gen) ||
-                    Collections.frequency(childGens, gen) < Collections.frequency(secondParentGens, gen)) {
-                childGens.add(gen);
+            if (!Arrays.asList(childGens).contains(gen) ||
+                    Collections.frequency(Arrays.asList(childGens), gen) < Collections.frequency(secondParentGens, gen)) {
+                childGens[index] = gen;
+                index++;
             }
         }
 
-        children = new Transposition(childGens);
+        for (int position = 0; position < finish; position++) {
+            int gen = secondParentGens.get(position);
+            if (index == gensSize) {
+                index = 0;
+            }
+            if (!Arrays.asList(childGens).contains(gen) ||
+                    Collections.frequency(Arrays.asList(childGens), gen) < Collections.frequency(secondParentGens, gen)) {
+                childGens[index] = gen;
+                index++;
+            }
+        }
+
+        List<Integer> list = Arrays.asList(childGens);
+        ArrayList<Integer> gensList = new ArrayList<>();
+        gensList.addAll(list);
+        children = new Transposition(gensList);
         return children;
     }
 
@@ -129,11 +162,11 @@ public class Genetic implements Algorithm {
         return randomParents.get(0);
     }
 
-    private HashMap<Transposition, Integer> calculateFitness(ArrayList<Transposition> population) {
-        HashMap<Transposition, Integer> populationWithFitness = new HashMap<>();
+    private List<FitnessDecision> calculateFitness(ArrayList<Transposition> population) {
+        List<FitnessDecision> populationWithFitness = new ArrayList<>(POPULATION_SIZE);
         for (Transposition parent : population) {
-            int fitness = function.getLength(parent, bugLength);
-            populationWithFitness.put(parent, fitness);
+            double fitness = function.getLengthWithRemains(parent, bugLength);
+            populationWithFitness.add(new FitnessDecision(parent, fitness));
         }
         return populationWithFitness;
     }
@@ -141,22 +174,118 @@ public class Genetic implements Algorithm {
     private ArrayList<Transposition> generatePopulation(Transposition startTransposition) {
         ArrayList<Transposition> population = new ArrayList<>();
 
-        for (int populationSize = 0; populationSize < 1000; populationSize++) {
+        for (int populationSize = 0; populationSize < POPULATION_SIZE; populationSize++) {
             Transposition modifiedTransposition = new Transposition(new ArrayList<>(startTransposition.getElementsList()));
-            for (int swapCount = 0; swapCount < 1000; swapCount++) {
-                Collections.swap(modifiedTransposition.getElementsList(),
-                        random.nextInt(modifiedTransposition.getElementsList().size()),
-                        random.nextInt(modifiedTransposition.getElementsList().size()));
-            }
+            Collections.shuffle(modifiedTransposition.getElementsList());
             population.add(modifiedTransposition);
         }
 
         return population;
     }
 
+    private List<Transposition> getRankedRandomDecision(List<FitnessDecision> population, int sumOfRank) {
+        List<Transposition> list = new ArrayList<>();
+        int topIndex1 = getTopIndex(sumOfRank);
+        int topIndex2 = getTopIndex(sumOfRank, topIndex1);
+
+        Transposition first = population.get(topIndex1).decision;
+        Transposition second = population.get(topIndex2).decision;
+
+        list.add(first);
+        list.add(second);
+
+        return list;
+    }
+
+    private int indexNodeByRank(int rank) {
+        for (int i = 0; i < rankMap.size(); i++) {
+            if (rank < rankMap.get(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int calcSumOfRank(int populationSize) {
+        int sumOfRank;
+
+        if (populationSize == 1) {
+            sumOfRank = populationSize;
+        } else {
+            sumOfRank = populationSize + calcSumOfRank(populationSize - 1);
+        }
+
+        rankMap.add(sumOfRank);
+
+        return sumOfRank;
+    }
+
+    private int getBottomIndex(int sumOfRank, int disallowedIndex) {
+        int topIndex = getTopIndex(sumOfRank, disallowedIndex);
+        return POPULATION_SIZE - 1 - topIndex;
+    }
+
+    private int getBottomIndex(int sumOfRank) {
+        return getBottomIndex(sumOfRank, -1);
+    }
+
+    private int getTopIndex(int sumOfRank, int disallowedIndex) {
+        int topIndex;
+
+        do {
+            topIndex = getTopIndex(sumOfRank);
+        } while (topIndex == disallowedIndex);
+
+        return topIndex;
+    }
+
+    private int getTopIndex(int sumOfRank) {
+        return indexNodeByRank(random.nextInt(sumOfRank));
+    }
+
     private class TranspositionComparator implements Comparator<Transposition> {
         public int compare(Transposition t1, Transposition t2) {
-            return Integer.valueOf(function.getLength(t1, bugLength)).compareTo(function.getLength(t2, bugLength));
+            double firstLength = function.getLengthWithRemains(t1, bugLength);
+            double secondLength = function.getLengthWithRemains(t2, bugLength);
+            if (firstLength < secondLength) {
+                return -1;
+            } else if (firstLength > secondLength) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     }
+
+    public final static class FitnessDecision {
+        private Transposition decision;
+        private Double fitness;
+
+        public FitnessDecision(Transposition decision, Double fitness) {
+            this.decision = decision;
+            this.fitness = fitness;
+        }
+
+        public Transposition getDecision() {
+            return decision;
+        }
+
+        public void setDecision(Transposition decision) {
+            this.decision = decision;
+        }
+
+        public Double getFitness() {
+            return fitness;
+        }
+
+        public void setFitness(Double fitness) {
+            this.fitness = fitness;
+        }
+
+        @Override
+        public String toString() {
+            return decision.toString() + "(" + fitness + ")";
+        }
+    }
+
 }
