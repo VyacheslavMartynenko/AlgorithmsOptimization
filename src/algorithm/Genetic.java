@@ -3,12 +3,11 @@ package algorithm;
 import math.Function;
 import model.Transposition;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Genetic implements Algorithm {
-    public static final int POPULATION_SIZE = 100;
-    public static final int COUNT_OF_TOURNIR_CANDIDATE = 3;
+    private static final int POPULATION_SIZE = 100;
+    //public static final int COUNT_OF_TOURNIR_CANDIDATE = 8;
     private Random random;
     private int bugLength;
     private int numberOfAttempts;
@@ -106,7 +105,7 @@ public class Genetic implements Algorithm {
         return mutateChild;
     }
 
-    public static Transposition getCrossoverChild(Transposition firstParent, Transposition secondParent) {
+    private Transposition getCrossoverChild(Transposition firstParent, Transposition secondParent) {
         final Random random = new Random();
         Transposition children;
         int gensSize = firstParent.getElementsList().size();
@@ -153,14 +152,14 @@ public class Genetic implements Algorithm {
         return children;
     }
 
-    private Transposition getParent() {
-        ArrayList<Transposition> randomParents = new ArrayList<>();
-        for (int parent = 0; parent < 8; parent++) {
-            randomParents.add(population.get(random.nextInt(population.size())));
-        }
-        Collections.sort(randomParents, new TranspositionComparator());
-        return randomParents.get(0);
-    }
+//    private Transposition getParent() {
+//        ArrayList<Transposition> randomParents = new ArrayList<>();
+//        for (int parent = 0; parent < 8; parent++) {
+//            randomParents.add(population.get(random.nextInt(population.size())));
+//        }
+//        Collections.sort(randomParents, new TranspositionComparator());
+//        return randomParents.get(0);
+//    }
 
     private List<FitnessDecision> calculateFitness(ArrayList<Transposition> population) {
         List<FitnessDecision> populationWithFitness = new ArrayList<>(POPULATION_SIZE);
@@ -220,15 +219,6 @@ public class Genetic implements Algorithm {
         return sumOfRank;
     }
 
-    private int getBottomIndex(int sumOfRank, int disallowedIndex) {
-        int topIndex = getTopIndex(sumOfRank, disallowedIndex);
-        return POPULATION_SIZE - 1 - topIndex;
-    }
-
-    private int getBottomIndex(int sumOfRank) {
-        return getBottomIndex(sumOfRank, -1);
-    }
-
     private int getTopIndex(int sumOfRank, int disallowedIndex) {
         int topIndex;
 
@@ -243,42 +233,26 @@ public class Genetic implements Algorithm {
         return indexNodeByRank(random.nextInt(sumOfRank));
     }
 
-    private class TranspositionComparator implements Comparator<Transposition> {
-        public int compare(Transposition t1, Transposition t2) {
-            double firstLength = function.getLengthWithRemains(t1, bugLength);
-            double secondLength = function.getLengthWithRemains(t2, bugLength);
-            if (firstLength < secondLength) {
-                return -1;
-            } else if (firstLength > secondLength) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-    }
+//    private class TranspositionComparator implements Comparator<Transposition> {
+//        public int compare(Transposition t1, Transposition t2) {
+//            double firstLength = function.getLengthWithRemains(t1, bugLength);
+//            double secondLength = function.getLengthWithRemains(t2, bugLength);
+//            if (firstLength < secondLength) {
+//                return -1;
+//            } else if (firstLength > secondLength) {
+//                return 1;
+//            } else {
+//                return 0;
+//            }
+//        }
+//    }
 
-    public final static class FitnessDecision {
+    private final static class FitnessDecision {
         private Transposition decision;
         private Double fitness;
 
-        public FitnessDecision(Transposition decision, Double fitness) {
+        private FitnessDecision(Transposition decision, Double fitness) {
             this.decision = decision;
-            this.fitness = fitness;
-        }
-
-        public Transposition getDecision() {
-            return decision;
-        }
-
-        public void setDecision(Transposition decision) {
-            this.decision = decision;
-        }
-
-        public Double getFitness() {
-            return fitness;
-        }
-
-        public void setFitness(Double fitness) {
             this.fitness = fitness;
         }
 
